@@ -1,0 +1,89 @@
+---
+title: "Homework 4"
+author: Kyle Cahitas
+format: pdf
+editor: visual
+---
+
+## Question 
+
+
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dbplyr)
+library(here)
+library(janitor)
+library(naniar)
+library(skimr)
+library(knitr)
+library(ggeffects)
+```
+
+
+```{r}
+fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>%  
+  clean_names() %>% 
+  mutate_all(tolower)
+```
+
+```{r}
+colnames(fish_df)
+```
+
+```{r}
+View(fish_df)
+```
+
+How does fish length predict fish weight for trout perch (across all sample years)?
+
+```{r}
+troutperch_df <- fish_df %>% 
+  filter(spname == "troutperch") %>% 
+  rename(
+    year = year4,
+    trout_perch = spname 
+  )
+View(troutperch_df)
+```
+
+```{r, fig.width=7, fig.height=4, out.width="80%"}
+View(skim(troutperch_df))
+```
+
+```{r}
+# 200 missing rows for weight
+# have all rows for length 
+gg_miss_var(troutperch_df)
+```
+
+```{r}
+#using tidyverse to filter out any Na values in the weight column 
+troutperch_Na <- troutperch_df %>% 
+  filter(!is.na(weight))
+View(troutperch_Na)
+```
+
+```{r, fig.width=7, fig.height=4, out.width="80%"}
+ggplot(data = troutperch_Na, aes (x = length, y = weight)) + 
+  geom_point()+ 
+  theme_light()
+```
+
+```{r, fig.width=7, fig.height=4, out.width="80%"}
+modelobject <- lm(length ~ weight, data = troutperch_Na)
+par(mfrow = c(2,2))
+plot(modelobject)
+
+```
+
+```{r}
+predictions <- ggpredict(modelobject, terms = "weight")
+View(predictions)
+```
+
+
+
+
