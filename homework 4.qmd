@@ -1,10 +1,9 @@
 ---
 title: "Homework 4"
 author: Kyle Cahitas
-format: html
+format: docx
 editor: visual
 ---
-
 ## Question- How does fish length predict fish wieght for trout perch (across all sample years)
 
 ```{r libraries, include = FALSE}
@@ -25,7 +24,7 @@ library(car)
 
 ```
 
-```{r filterting-data, warning = FALSE}
+```{r filterting-data, echo = FALSE}
 #filtering data, importing csv
 fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>% 
   
@@ -37,14 +36,23 @@ fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>%
   
   #renaming columnns 
   rename(year = year4)
-#View(fish_df)
+
+View(fish_df)
 ```
 
 1. Hypothesis 
 
+Linear models describes linear relationship between variable and predictor 
+
+Null = the predictor variable does not predict the reponse variable 
+
+Alt = the predictor variable does predict the response variable 
+
+
+---
 Null Hypothesis:
 Mathematical: 
-Biological:
+Biological: weight is in grams, length is in milimites 
 
 
 Alternative Hypothesis
@@ -57,8 +65,12 @@ Biological:
 # have all rows for length 
 gg_miss_var(fish_df) 
 ```
-There is alot 
+When running the function gg_miss_var, a total of 
 
+we have found that there are 199 missing values for weight. 
+
+489 - 290 
+With the weight column demonstrating it has 199 missing values and the length column demonstrating there are no missing values, we can assign the weight to be a dependent variable and the length to be the independent variable. 
 
 
 3.
@@ -70,9 +82,12 @@ View(troutperch_Na)
 ```
 
 ```{r, fig.width=7, fig.height=4, out.width="80%"}
+#quick visual of the data 
 ggplot(data = troutperch_Na, aes(x = length, y = weight)) + 
   
   geom_point()+
+  
+  labs(title = "Troutperch lengths and weight")+
   
   theme_classic()
 
@@ -80,41 +95,53 @@ ggplot(data = troutperch_Na, aes(x = length, y = weight)) +
 
 5. Diagnostic Plot 
 
-```{r}
+Homoscedasticity (constant variance) of residuals 
+
+Diagnostic plots also tell you are there any outliers
+
+Diagnostic plots allow you to check the assumptions of linear models, if the plot looks good, look at the model summary to determine mdoel estimates, R^2, p-values 
+
+```{r, diagnostic plot}
 modelobject <- lm(weight ~ length, data = troutperch_Na)
-#par(mfrow = c(2,2))
+par(mfrow = c(2,2))
 plot(modelobject)
 #####
 # when looking at the Residual vs Fitted, it looks Heteroscedasticity 
 # Normal Q-Q, the data looks normal 
 # scale -location, is the same thing like Residuals vs fitted 
 # Residuals vs leverage 
-
-
-
-
 ```
+
+The diagnostic plot "Residual vs Fitted" visually implies that the data is heteroscedasticity.
+
+The diagnostic plot "Normal Q-Q" visually implies 
+
+The diagnostic plot "Scale-Location visually implies 
+
+The diagnostic plot "Resiudal vs Leverage" visually implies 
+
 
 6. 
 
-```{r}
-
-predictions <- ggpredict(modelobject, terms = "length")
-
-View(predictions)
-```
-
-```{r}
+```{r, summary table}
+#using function summary() to display results 
 model_summary <- summary(modelobject)
 
+model_summary
+```
+
+7.
+
+```{r, doing ANOVA test}
+#anova is used to get analysis of variance tables for a model 
 model_sqaures <- anova(modelobject)
 
 View(model_sqaures)
 ```
 
-7.
 
 ```{r,fig.width=7, fig.height=4, out.width="90%"}
+#
 model_squares_table <-tidy(model_sqaures) %>% 
   
   mutate(p.value = case_when(p.value <0.001 ~ "<0.001")) %>% 
@@ -140,6 +167,14 @@ the summary() object
 ```
 
 10.
+
+```{r, creating predictions}
+
+predictions <- ggpredict(modelobject, terms = "length")
+
+View(predictions)
+```
+
 ```{r, fig.width=7, fig.height=4, out.width="90%"}
 plot_predictions <- ggplot(data = troutperch_Na, 
                            aes(x = length, y = weight)) +
@@ -148,15 +183,17 @@ plot_predictions <- ggplot(data = troutperch_Na,
   # then plot the predictions
   geom_line(data = predictions, 
             aes(x = x, y = predicted), 
-            color = "blue", linewidth = 1) +
+            color = "green", linewidth = .9) +
   # then plot the 95% confidence interval from ggpredict
   geom_ribbon(data = predictions, 
               aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
               alpha = 0.2) +
   # theme and meaningful labels
   theme_bw() +
- labs(x = "Stem length (mm)",
-       y = "Stem dry mass (g)")
+ labs(x = "Length (mm)",
+      y = "weight (g)",
+      title = "Prediction of troutperch"
+      )
 
 plot_predictions
 ```
