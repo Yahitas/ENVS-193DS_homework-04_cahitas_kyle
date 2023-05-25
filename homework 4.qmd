@@ -1,16 +1,13 @@
 ---
 title: "Homework 4"
 author: Kyle Cahitas
-format: pdf
+format: html
 editor: visual
 ---
 
-## Question 
+## Question- How does fish length predict fish wieght for trout perch (across all sample years)
 
-
-
-
-```{r}
+```{r libraries, include = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(dbplyr)
@@ -20,70 +17,147 @@ library(naniar)
 library(skimr)
 library(knitr)
 library(ggeffects)
+library(performance)
+library(broom)
+library(flextable)
+library(ggeffects)
+library(car)
+
 ```
 
-
-```{r}
-fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>%  
-  clean_names() %>% 
-  mutate_all(tolower)
+```{r filterting-data, warning = FALSE}
+#filtering data, importing csv
+fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>% 
+  
+  #filtering rows that have "TROUTPERCH
+  filter(spname == "TROUTPERCH") %>% 
+  
+  #selecting specific rows
+  select(spname,year4,length,weight) %>% 
+  
+  #renaming columnns 
+  rename(year = year4)
+#View(fish_df)
 ```
 
-```{r}
-colnames(fish_df)
-```
+1. Hypothesis 
 
-```{r}
-View(fish_df)
-```
+Null Hypothesis:
+Mathematical: 
+Biological:
 
-How does fish length predict fish weight for trout perch (across all sample years)?
 
-```{r}
-troutperch_df <- fish_df %>% 
-  filter(spname == "troutperch") %>% 
-  rename(
-    year = year4,
-    trout_perch = spname 
-  )
-View(troutperch_df)
-```
+Alternative Hypothesis
+Mathematical:
+Biological: 
 
-```{r, fig.width=7, fig.height=4, out.width="80%"}
-View(skim(troutperch_df))
-```
-
-```{r}
+2.
+```{r missing-data-vis, fig.width=7, fig.height=4, out.width="90%"}
 # 200 missing rows for weight
 # have all rows for length 
-gg_miss_var(troutperch_df)
+gg_miss_var(fish_df) 
 ```
+There is alot 
 
-```{r}
+
+
+3.
+```{r dropping-Na-Values}
 #using tidyverse to filter out any Na values in the weight column 
-troutperch_Na <- troutperch_df %>% 
-  filter(!is.na(weight))
+troutperch_Na <- fish_df %>% 
+  drop_na(weight)
 View(troutperch_Na)
 ```
 
 ```{r, fig.width=7, fig.height=4, out.width="80%"}
-ggplot(data = troutperch_Na, aes (x = length, y = weight)) + 
-  geom_point()+ 
-  theme_light()
-```
-
-```{r, fig.width=7, fig.height=4, out.width="80%"}
-modelobject <- lm(length ~ weight, data = troutperch_Na)
-par(mfrow = c(2,2))
-plot(modelobject)
+ggplot(data = troutperch_Na, aes(x = length, y = weight)) + 
+  
+  geom_point()+
+  
+  theme_classic()
 
 ```
+
+5. Diagnostic Plot 
 
 ```{r}
-predictions <- ggpredict(modelobject, terms = "weight")
+modelobject <- lm(weight ~ length, data = troutperch_Na)
+#par(mfrow = c(2,2))
+plot(modelobject)
+#####
+# when looking at the Residual vs Fitted, it looks Heteroscedasticity 
+# Normal Q-Q, the data looks normal 
+# scale -location, is the same thing like Residuals vs fitted 
+# Residuals vs leverage 
+
+
+
+
+```
+
+6. 
+
+```{r}
+
+predictions <- ggpredict(modelobject, terms = "length")
+
 View(predictions)
 ```
 
+```{r}
+model_summary <- summary(modelobject)
 
+model_sqaures <- anova(modelobject)
 
+View(model_sqaures)
+```
 
+7.
+
+```{r,fig.width=7, fig.height=4, out.width="90%"}
+model_squares_table <-tidy(model_sqaures) %>% 
+  
+  mutate(p.value = case_when(p.value <0.001 ~ "<0.001")) %>% 
+  
+  flextable() %>% 
+  #need to change the weight name to luike fis
+  set_header_labels(df = "Degrees of Freedom", 
+                    sumsq = "Sum of squares",
+                    meansq = "Mean squares",
+                    statistic = "F-statistic",
+                    p.value = "p-value"
+                    )
+model_squares_table
+  
+```
+
+8. In 1-2 sentences, describe how the ANOVA table relates to the information you get from
+the summary() object
+
+9.
+```{r}
+
+```
+
+10.
+```{r, fig.width=7, fig.height=4, out.width="90%"}
+plot_predictions <- ggplot(data = troutperch_Na, 
+                           aes(x = length, y = weight)) +
+  # first plot the underlying data from maples_data
+  geom_point() +
+  # then plot the predictions
+  geom_line(data = predictions, 
+            aes(x = x, y = predicted), 
+            color = "blue", linewidth = 1) +
+  # then plot the 95% confidence interval from ggpredict
+  geom_ribbon(data = predictions, 
+              aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
+              alpha = 0.2) +
+  # theme and meaningful labels
+  theme_bw() +
+ labs(x = "Stem length (mm)",
+       y = "Stem dry mass (g)")
+
+plot_predictions
+```
+caption

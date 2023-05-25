@@ -118,6 +118,18 @@
 \def\fps@figure{htbp}
 \makeatother
 
+\usepackage{fontspec}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{hhline}
+\newlength\Oldarrayrulewidth
+\newlength\Oldtabcolsep
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{wrapfig}
 \KOMAoption{captions}{tableheading}
 \makeatletter
 \makeatother
@@ -194,7 +206,7 @@
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, frame hidden, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{question}{%
 \subsection{Question}\label{question}}
@@ -278,14 +290,50 @@ The following object is masked from 'package:naniar':
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{library}\NormalTok{(knitr)}
+\FunctionTok{library}\NormalTok{(ggeffects)}
+\FunctionTok{library}\NormalTok{(performance)}
+\FunctionTok{library}\NormalTok{(broom)}
+\FunctionTok{library}\NormalTok{(flextable)}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{verbatim}
+
+Attaching package: 'flextable'
+
+The following object is masked from 'package:purrr':
+
+    compose
+\end{verbatim}
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{fish\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{, }\StringTok{"ntl6\_v12.csv"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}  
-  \FunctionTok{clean\_names}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{mutate\_all}\NormalTok{(tolower)}
+\FunctionTok{library}\NormalTok{(ggeffects)}
+\FunctionTok{library}\NormalTok{(car)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Loading required package: carData
+
+Attaching package: 'car'
+
+The following object is masked from 'package:dplyr':
+
+    recode
+
+The following object is masked from 'package:purrr':
+
+    some
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#filtering data, importing csv}
+\NormalTok{fish\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{, }\StringTok{"ntl6\_v12.csv"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(spname }\SpecialCharTok{==} \StringTok{"TROUTPERCH"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{select}\NormalTok{(spname,year4,length,weight) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{year =}\NormalTok{ year4)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -311,18 +359,6 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{colnames}\NormalTok{(fish\_df)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
- [1] "lakeid"     "year4"      "sampledate" "gearid"     "spname"    
- [6] "sampletype" "depth"      "rep"        "indid"      "length"    
-[11] "weight"     "sex"        "fishpart"   "spseq"      "flag"      
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \FunctionTok{View}\NormalTok{(fish\_df)}
 \end{Highlighting}
 \end{Shaded}
@@ -330,35 +366,21 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
 How does fish length predict fish weight for trout perch (across all
 sample years)?
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{troutperch\_df }\OtherTok{\textless{}{-}}\NormalTok{ fish\_df }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{filter}\NormalTok{(spname }\SpecialCharTok{==} \StringTok{"troutperch"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{rename}\NormalTok{(}
-    \AttributeTok{year =}\NormalTok{ year4,}
-    \AttributeTok{trout\_perch =}\NormalTok{ spname }
-\NormalTok{  )}
-\FunctionTok{View}\NormalTok{(troutperch\_df)}
-\end{Highlighting}
-\end{Shaded}
+Null Hypothesis
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{View}\NormalTok{(}\FunctionTok{skim}\NormalTok{(troutperch\_df))}
-\end{Highlighting}
-\end{Shaded}
+Alternative Hypothesis
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# 200 missing rows for weight}
 \CommentTok{\# have all rows for length }
-\FunctionTok{gg\_miss\_var}\NormalTok{(troutperch\_df)}
+\FunctionTok{gg\_miss\_var}\NormalTok{(fish\_df)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{homework-4_files/figure-pdf/unnamed-chunk-7-1.pdf}
+{\centering \includegraphics{homework-4_files/figure-pdf/missing-data-vis-1.pdf}
 
 }
 
@@ -367,23 +389,25 @@ sample years)?
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\#using tidyverse to filter out any Na values in the weight column }
-\NormalTok{troutperch\_Na }\OtherTok{\textless{}{-}}\NormalTok{ troutperch\_df }\SpecialCharTok{\%\textgreater{}\%} 
-  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(weight))}
+\NormalTok{troutperch\_Na }\OtherTok{\textless{}{-}}\NormalTok{ fish\_df }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{drop\_na}\NormalTok{(weight)}
 \FunctionTok{View}\NormalTok{(troutperch\_Na)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }\FunctionTok{aes}\NormalTok{ (}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+} 
-  \FunctionTok{geom\_point}\NormalTok{()}\SpecialCharTok{+} 
-  \FunctionTok{theme\_light}\NormalTok{()}
+\FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+} 
+  
+  \FunctionTok{geom\_point}\NormalTok{()}\SpecialCharTok{+}
+  
+  \FunctionTok{theme\_classic}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-9-1.pdf}
+{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-1-1.pdf}
 
 }
 
@@ -391,30 +415,144 @@ sample years)?
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{modelobject }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(length }\SpecialCharTok{\textasciitilde{}}\NormalTok{ weight, }\AttributeTok{data =}\NormalTok{ troutperch\_Na)}
+\NormalTok{modelobject }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(weight }\SpecialCharTok{\textasciitilde{}}\NormalTok{ length, }\AttributeTok{data =}\NormalTok{ troutperch\_Na)}
 \FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
 \FunctionTok{plot}\NormalTok{(modelobject)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-Warning: not plotting observations with leverage one:
-  20, 28, 33, 87, 106, 122, 148, 152, 158, 185, 205, 215, 231, 240, 257, 269, 270, 271, 277, 289
-\end{verbatim}
-
-\begin{verbatim}
-Warning in sqrt(crit * p * (1 - hh)/hh): NaNs produced
-
-Warning in sqrt(crit * p * (1 - hh)/hh): NaNs produced
-\end{verbatim}
-
 \begin{figure}[H]
 
-{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-10-1.pdf}
+{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-2-1.pdf}
 
 }
 
 \end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\#\#\#}
+\CommentTok{\# when looking at the Residual vs Fitted, it looks Heteroscedasticity }
+\CommentTok{\# Normal Q{-}Q, the data looks normal }
+\CommentTok{\# scale {-}location, is the same thing like Residuals vs fitted }
+\CommentTok{\# Residuals vs leverage }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggpredict}\NormalTok{(modelobject, }\AttributeTok{terms =} \StringTok{"length"}\NormalTok{)}
+
+\FunctionTok{View}\NormalTok{(predictions)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plot\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }
+                           \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+}
+  \CommentTok{\# first plot the underlying data from maples\_data}
+  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \CommentTok{\# then plot the predictions}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
+            \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted), }
+            \AttributeTok{color =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \CommentTok{\# then plot the 95\% confidence interval from ggpredict}
+  \FunctionTok{geom\_ribbon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
+              \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted, }\AttributeTok{ymin =}\NormalTok{ conf.low, }\AttributeTok{ymax =}\NormalTok{ conf.high), }
+              \AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \CommentTok{\# theme and meaningful labels}
+  \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
+ \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Stem length (mm)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Stem dry mass (g)"}\NormalTok{)}
+
+\NormalTok{plot\_predictions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{homework-4_files/figure-pdf/unnamed-chunk-4-1.pdf}
+
+}
+
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_summary }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(modelobject)}
+
+\NormalTok{model\_sqaures }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(modelobject)}
+
+\FunctionTok{View}\NormalTok{(model\_sqaures)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{model\_squares\_table }\OtherTok{\textless{}{-}}\FunctionTok{tidy}\NormalTok{(model\_sqaures) }\SpecialCharTok{\%\textgreater{}\%} 
+  
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{p.value =} \FunctionTok{case\_when}\NormalTok{(p.value }\SpecialCharTok{\textless{}}\FloatTok{0.001} \SpecialCharTok{\textasciitilde{}} \StringTok{"\textless{}0.001"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  
+  \FunctionTok{flextable}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\#need to change the weight name to luike fis}
+  \FunctionTok{set\_header\_labels}\NormalTok{(}\AttributeTok{df =} \StringTok{"Degrees of Freedom"}\NormalTok{, }
+                    \AttributeTok{sumsq =} \StringTok{"Sum of squares"}\NormalTok{,}
+                    \AttributeTok{meansq =} \StringTok{"Mean squares"}\NormalTok{,}
+                    \AttributeTok{statistic =} \StringTok{"F{-}statistic"}\NormalTok{,}
+                    \AttributeTok{p.value =} \StringTok{"p{-}value"}
+\NormalTok{                    )}
+\NormalTok{model\_squares\_table}
+\end{Highlighting}
+\end{Shaded}
+
+\global\setlength{\Oldarrayrulewidth}{\arrayrulewidth}
+
+\global\setlength{\Oldtabcolsep}{\tabcolsep}
+
+\setlength{\tabcolsep}{0pt}
+
+\renewcommand*{\arraystretch}{1.5}
+
+
+
+\providecommand{\ascline}[3]{\noalign{\global\arrayrulewidth #1}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\begin{longtable*}[c]{|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}|p{0.75in}}
+
+
+
+\ascline{1.5pt}{666666}{1-6}
+
+\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{term}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Degrees\ of\ Freedom}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Sum\ of\ squares}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Mean\ squares}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{F-statistic}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{p-value}}} \\
+
+\ascline{1.5pt}{666666}{1-6}\endhead
+
+
+
+\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{length}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.2877}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.287687}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,280.844}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{<0.001}}} \\
+
+
+
+
+
+\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Residuals}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{288}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{322.0525}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1.118238}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} \\
+
+\ascline{1.5pt}{666666}{1-6}
+
+
+
+\end{longtable*}
+
+
+
+\arrayrulecolor[HTML]{000000}
+
+\global\setlength{\arrayrulewidth}{\Oldarrayrulewidth}
+
+\global\setlength{\tabcolsep}{\Oldtabcolsep}
+
+\renewcommand*{\arraystretch}{1}
 
 
 
