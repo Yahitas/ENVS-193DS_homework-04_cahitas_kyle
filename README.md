@@ -5,7 +5,7 @@ This is a read me for the homework for ENVS193-DS.
 The source of this data is linked below:
 https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-ntl.6.34 
 
-The data set focused on fish species in the North Temperate Lakes. For this stastical testing, trout perch was the only species to be focused on. 
+The data set focused on fish species in the North Temperate Lakes. For this statistical testing, trout perch was the only species to be focused on. 
 
 The question asked was if trout perch length can predict the trout fish weight, across the years the data was given. 
 
