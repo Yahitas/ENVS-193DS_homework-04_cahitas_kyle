@@ -26,7 +26,7 @@ library(ggthemes)
 
 ```
 
-```{r filterting-data, warning = FALSE}
+```{r filterting-data, warning = FALSE,message=FALSE}
 #filtering data, importing csv
 fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>% 
   
@@ -204,10 +204,6 @@ plot_predictions <- ggplot(data = troutperch_Na,
  
 plot_predictions
 ```
-
-The plot above demonstrates data of trout perch weight and length, between the years of 1981 - 2022 in the North Temperate Lakes. When comparing the trout perch length and weight and by running ANOVA and the summery(), the length has a postive slope. 
-The predication interval is visualized by the brown line which defines a range of values within which a response is likely to fall given a specified length value. The gray hue, surrounding the predication interval represents the a confidence level of 95% the predication interval can predict in. In conclusion, the data can help predict the weight of a troutperch when given the length of the troutperch.
-
 
 The above plot demonstrates data regarding the weight and length of trout perch in the North Temperate Lakes from 1981 to 2022. By conducing ANOVA and using the "summary()" function, we had significant evidence to reject the null hypothesis and accept the alternative hypothesis. This is viewed being that the slope of this plot does not equal to zero but the length of the trout perch exhibits a positive slop. 
 
