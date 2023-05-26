@@ -1,10 +1,11 @@
 ---
 title: "Homework 4"
-author: Kyle Cahitas
+author: "Kyle Cahitas"
+date: 2023-05-25
 format: docx
-editor: visual
 ---
-## Question- How does fish length predict fish wieght for trout perch (across all sample years)
+
+## Question- How does fish length predict fish weight for trout perch (across all sample years)
 
 ```{r libraries, include = FALSE}
 library(tidyverse)
@@ -21,10 +22,11 @@ library(broom)
 library(flextable)
 library(ggeffects)
 library(car)
+library(ggthemes)
 
 ```
 
-```{r filterting-data, echo = FALSE}
+```{r filterting-data, warning = FALSE}
 #filtering data, importing csv
 fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>% 
   
@@ -36,118 +38,115 @@ fish_df <- read_csv(here("data", "ntl6_v12.csv")) %>%
   
   #renaming columnns 
   rename(year = year4)
+```
 
+```{r, include = FALSE}
 View(fish_df)
 ```
 
-1. Hypothesis 
+1.Hypothesis
 
-Linear models describes linear relationship between variable and predictor 
+Linear models describes linear relationship between variable and predictor
 
-Null = the predictor variable does not predict the reponse variable 
+Null Hypothesis: 
+There is no significant relationship between trout-perch length (mm) and trout-perch weight (g), indicating that trout-perch length does not indicate trout-perch weight. 
+There is no significant relationship between trout-perch length (mm) and trout perch weight (g), due to the slope of the regression line result to zero or the p-value was greater than 0.05. 
 
-Alt = the predictor variable does predict the response variable 
+Alternative Hypothesis: 
+There is significant relationship between trout-perch length (mm) and trout-perch weight (g), indicating that trout-perch length can predict trout-perch weight. 
+There is significant relationship between trout-perch length (mm) and trout-perch weight (g), due to the slope of the regression line resulting to not equal zero and having a p-value lower than 0.05. 
 
-
----
-Null Hypothesis:
-Mathematical: 
-Biological: weight is in grams, length is in milimites 
-
-
-Alternative Hypothesis
-Mathematical:
-Biological: 
-
-2.
-```{r missing-data-vis, fig.width=7, fig.height=4, out.width="90%"}
+2.  
+```{r missing-data-vis, fig.width=8, fig.height=5, out.width="90%"}
 # 200 missing rows for weight
 # have all rows for length 
 gg_miss_var(fish_df) 
 ```
-When running the function gg_miss_var, a total of 
 
-we have found that there are 199 missing values for weight. 
+When running the function gg_miss_var, a total of 199 missing observation was discovered in the column of weight. This resulted in having the original data frame be 489 to the new data frame being 290. These missing observation help assign weight be the depending variable and length being the independent variable. 
 
-489 - 290 
-With the weight column demonstrating it has 199 missing values and the length column demonstrating there are no missing values, we can assign the weight to be a dependent variable and the length to be the independent variable. 
-
-
-3.
+3.  
 ```{r dropping-Na-Values}
-#using tidyverse to filter out any Na values in the weight column 
+#using tidyverse to filter out any Na values in the weight column # and deleting that row in the process
 troutperch_Na <- fish_df %>% 
   drop_na(weight)
-View(troutperch_Na)
+
+#View(troutperch_Na)
 ```
 
-```{r, fig.width=7, fig.height=4, out.width="80%"}
+```{r, fig.width=8, fig.height=5, out.width="90%"}
 #quick visual of the data 
 ggplot(data = troutperch_Na, aes(x = length, y = weight)) + 
   
   geom_point()+
   
-  labs(title = "Troutperch lengths and weight")+
+  labs(title = "Trout-perch lengths and weight")+
   
   theme_classic()
 
 ```
+By looking at a quick visual of the data, there appears to be a somewhat postive slope, but more tests need to be done. 
 
-5. Diagnostic Plot 
 
-Homoscedasticity (constant variance) of residuals 
+5.  Diagnostic Plot
 
-Diagnostic plots also tell you are there any outliers
-
-Diagnostic plots allow you to check the assumptions of linear models, if the plot looks good, look at the model summary to determine mdoel estimates, R^2, p-values 
-
-```{r, diagnostic plot}
+```{r, diagnostic-plot, fig.width=8, fig.height=5, out.width="90%" }
+#diagnostic plot
 modelobject <- lm(weight ~ length, data = troutperch_Na)
+
+#combining all four groups in a 2 x 2
 par(mfrow = c(2,2))
+
 plot(modelobject)
-#####
-# when looking at the Residual vs Fitted, it looks Heteroscedasticity 
-# Normal Q-Q, the data looks normal 
-# scale -location, is the same thing like Residuals vs fitted 
-# Residuals vs leverage 
 ```
 
-The diagnostic plot "Residual vs Fitted" visually implies that the data is heteroscedasticity.
+The diagnostic plot "Residual vs Fitted" visually implies that the data is heteroscedasticity. The observations are clumped in the middle and are not scattered. 
 
-The diagnostic plot "Normal Q-Q" visually implies 
+The diagnostic plot "Normal Q-Q" visually implies that data is normal but the right tail is very close to not being normal. 
 
-The diagnostic plot "Scale-Location visually implies 
+The diagnostic plot "Scale-Location visually implies if the data is heteroscedasiticty or homoscedasticity. Again, majority of the data resides in the middle, concluding that the data is of heteroscedasiticity. 
 
-The diagnostic plot "Resiudal vs Leverage" visually implies 
+The diagnostic plot "Residual vs Leverage" visually implies if there any outlier within the data. There appears to be one data point that is outside of the dashed line and thus, a outlier. 
 
+6.  Summary
 
-6. 
-
-```{r, summary table}
+```{r, summary-table}
 #using function summary() to display results 
 model_summary <- summary(modelobject)
 
 model_summary
 ```
 
-7.
 
-```{r, doing ANOVA test}
+The function summary 
+
+7.  ANOVA
+
+```{r, running-ANOVA}
 #anova is used to get analysis of variance tables for a model 
 model_sqaures <- anova(modelobject)
+```
 
+```{r, include = FALSE}
 View(model_sqaures)
 ```
 
 
-```{r,fig.width=7, fig.height=4, out.width="90%"}
-#
+```{r,fig.width=8, fig.height=5, out.width="90%"}
+#creating a table that demonstrates ANOVA
 model_squares_table <-tidy(model_sqaures) %>% 
+  # round the sum of squares and mean squares columns to have 5 digits (could be less)
+  mutate(across(sumsq:meansq, ~ round(.x, digits = 5))) %>% 
+  # round the F-statistic to have 1 digit
+  mutate(statistic = round(statistic, digits = 1)) %>% 
+  # replace the very very very small p value with < 0.001
   
   mutate(p.value = case_when(p.value <0.001 ~ "<0.001")) %>% 
   
+  #creating a table 
   flextable() %>% 
-  #need to change the weight name to luike fis
+  
+  #changing the header, for ease of understanding 
   set_header_labels(df = "Degrees of Freedom", 
                     sumsq = "Sum of squares",
                     meansq = "Mean squares",
@@ -155,46 +154,66 @@ model_squares_table <-tidy(model_sqaures) %>%
                     p.value = "p-value"
                     )
 model_squares_table
-  
 ```
 
-8. In 1-2 sentences, describe how the ANOVA table relates to the information you get from
-the summary() object
+8.In 1-2 sentences, describe how the ANOVA table relates to the information you get from the summary() object.
 
-9.
-```{r}
+The ANOVA tables relates to the summary() object, in terms of finding if the slope is equal to zero or not equal to zero. By incorporating sum of squares and mean squares, the F-value if the value is large means that the variation among group means is more than expected by chance, and can conclude that the slope is not equal to zero. 
 
-```
+9.In 2-3 sentences, summarize your results in prose with in-text references to test results. Include all relevant information.
 
-10.
+When running the summary(), the t-value for length was 35.79, the length's slope was 0.19985, p-value was <2e-16 and the standard error was 0.005585. When running the ANOVA the F-test was 1,280.8 and p-value was less than 0.001. The results from both tests, concluded that the length slope is postive, has a p-value lower than 0.05, thus we can reject the null hypothesis and accept the alternative hypothesis and can conclude that fish length can predict fish weight for trout perch. 
 
-```{r, creating predictions}
+10. Model Prediction Plot 
+
+```{r, creating-predictions}
 
 predictions <- ggpredict(modelobject, terms = "length")
 
 View(predictions)
 ```
 
-```{r, fig.width=7, fig.height=4, out.width="90%"}
+```{r, fig.width=8, fig.height=5, out.width="90%"}
 plot_predictions <- ggplot(data = troutperch_Na, 
                            aes(x = length, y = weight)) +
-  # first plot the underlying data from maples_data
+  #type of graph   
   geom_point() +
-  # then plot the predictions
+  # plotting the predictions on data 
   geom_line(data = predictions, 
             aes(x = x, y = predicted), 
-            color = "green", linewidth = .9) +
+            color = "brown", linewidth = .9) +
+  
   # then plot the 95% confidence interval from ggpredict
   geom_ribbon(data = predictions, 
               aes(x = x, y = predicted, ymin = conf.low, ymax = conf.high), 
-              alpha = 0.2) +
-  # theme and meaningful labels
-  theme_bw() +
+              alpha = .2) +
+  
+  ## theme and labels ##
+ theme_economist()+ #from ggthemes 
+  
+ # labeling plot 
  labs(x = "Length (mm)",
-      y = "weight (g)",
-      title = "Prediction of troutperch"
-      )
-
+      y = "Weight (g)",
+      title = "Prediction of Trout-Perch"
+      )+ 
+  #adjusting functions 
+  theme(
+    plot.title = element_text(face = "bold"),
+    axis.ticks = element_line(linewidth = 3, color = "darkgray")
+  )
+ 
 plot_predictions
 ```
-caption
+
+The plot above demonstrates data of trout perch weight and length, between the years of 1981 - 2022 in the North Temperate Lakes. When comparing the trout perch length and weight and by running ANOVA and the summery(), the length has a postive slope. 
+The predication interval is visualized by the brown line which defines a range of values within which a response is likely to fall given a specified length value. The gray hue, surrounding the predication interval represents the a confidence level of 95% the predication interval can predict in. In conclusion, the data can help predict the weight of a troutperch when given the length of the troutperch.
+
+
+The above plot demonstrates data regarding the weight and length of trout perch in the North Temperate Lakes from 1981 to 2022. By conducing ANOVA and using the "summary()" function, we had significant evidence to reject the null hypothesis and accept the alternative hypothesis. This is viewed being that the slope of this plot does not equal to zero but the length of the trout perch exhibits a positive slop. 
+
+The brown line in the plot represents the prediction interval, which establishes a range of values where the response is likely to fall, given a specific length value. The gray shading surrounding the prediction interval signifies a confidence level of 95%, indicating the accuracy of the prediction interval. In conclusion, this data can be utilized to predict the weight of a trout perch based on its length in the North Temperate Lakes. 
+
+
+
+
+

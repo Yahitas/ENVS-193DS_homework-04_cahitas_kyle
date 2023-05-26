@@ -202,147 +202,32 @@
 
 \title{Homework 4}
 \author{Kyle Cahitas}
-\date{}
+\date{2023-05-25}
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, breakable, boxrule=0pt, sharp corners, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
-\hypertarget{question}{%
-\subsection{Question}\label{question}}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(tidyverse)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
--- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
-v dplyr     1.1.1     v readr     2.1.4
-v forcats   1.0.0     v stringr   1.5.0
-v ggplot2   3.4.2     v tibble    3.2.1
-v lubridate 1.9.2     v tidyr     1.3.0
-v purrr     1.0.1     
--- Conflicts ------------------------------------------ tidyverse_conflicts() --
-x dplyr::filter() masks stats::filter()
-x dplyr::lag()    masks stats::lag()
-i Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(ggplot2)}
-\FunctionTok{library}\NormalTok{(dbplyr)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-
-Attaching package: 'dbplyr'
-
-The following objects are masked from 'package:dplyr':
-
-    ident, sql
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(here)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-here() starts at /Users/kyleyahitas/Desktop/github/ENVS-193DS_homework-04_cahitas_kyle
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(janitor)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-
-Attaching package: 'janitor'
-
-The following objects are masked from 'package:stats':
-
-    chisq.test, fisher.test
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(naniar)}
-\FunctionTok{library}\NormalTok{(skimr)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-
-Attaching package: 'skimr'
-
-The following object is masked from 'package:naniar':
-
-    n_complete
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(knitr)}
-\FunctionTok{library}\NormalTok{(ggeffects)}
-\FunctionTok{library}\NormalTok{(performance)}
-\FunctionTok{library}\NormalTok{(broom)}
-\FunctionTok{library}\NormalTok{(flextable)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-
-Attaching package: 'flextable'
-
-The following object is masked from 'package:purrr':
-
-    compose
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{library}\NormalTok{(ggeffects)}
-\FunctionTok{library}\NormalTok{(car)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-Loading required package: carData
-
-Attaching package: 'car'
-
-The following object is masked from 'package:dplyr':
-
-    recode
-
-The following object is masked from 'package:purrr':
-
-    some
-\end{verbatim}
+\hypertarget{question--how-does-fish-length-predict-fish-weight-for-trout-perch-across-all-sample-years}{%
+\subsection{Question- How does fish length predict fish weight for trout
+perch (across all sample
+years)}\label{question--how-does-fish-length-predict-fish-weight-for-trout-perch-across-all-sample-years}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\#filtering data, importing csv}
 \NormalTok{fish\_df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{, }\StringTok{"ntl6\_v12.csv"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  
+  \CommentTok{\#filtering rows that have "TROUTPERCH}
   \FunctionTok{filter}\NormalTok{(spname }\SpecialCharTok{==} \StringTok{"TROUTPERCH"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
+  
+  \CommentTok{\#selecting specific rows}
   \FunctionTok{select}\NormalTok{(spname,year4,length,weight) }\SpecialCharTok{\%\textgreater{}\%} 
+  
+  \CommentTok{\#renaming columnns }
   \FunctionTok{rename}\NormalTok{(}\AttributeTok{year =}\NormalTok{ year4)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-Warning: One or more parsing issues, call `problems()` on your data frame for details,
-e.g.:
-  dat <- vroom(...)
-  problems(dat)
-\end{verbatim}
 
 \begin{verbatim}
 Rows: 349229 Columns: 15
@@ -357,49 +242,79 @@ i Use `spec()` to retrieve the full column specification for this data.
 i Specify the column types or set `show_col_types = FALSE` to quiet this message.
 \end{verbatim}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{View}\NormalTok{(fish\_df)}
-\end{Highlighting}
-\end{Shaded}
+1.Hypothesis
 
-How does fish length predict fish weight for trout perch (across all
-sample years)?
+Linear models describes linear relationship between variable and
+predictor
 
-Null Hypothesis
+Null Hypothesis: There is no significant relationship between
+trout-perch length (mm) and trout-perch weight (g), indicating that
+trout-perch length does not indicate trout-perch weight. There is no
+significant relationship between trout-perch length (mm) and trout perch
+weight (g), due to the slope of the regression line result to zero or
+the p-value was greater than 0.05.
 
-Alternative Hypothesis
+Alternative Hypothesis: There is significant relationship between
+trout-perch length (mm) and trout-perch weight (g), indicating that
+trout-perch length can predict trout-perch weight. There is significant
+relationship between trout-perch length (mm) and trout-perch weight (g),
+due to the slope of the regression line resulting to not equal zero and
+having a p-value lower than 0.05.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# 200 missing rows for weight}
 \CommentTok{\# have all rows for length }
-\FunctionTok{gg\_miss\_var}\NormalTok{(fish\_df)}
+\FunctionTok{gg\_miss\_var}\NormalTok{(fish\_df) }
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{homework-4_files/figure-pdf/missing-data-vis-1.pdf}
+{\centering \includegraphics[width=0.9\textwidth,height=\textheight]{homework-4_files/figure-pdf/missing-data-vis-1.pdf}
 
 }
 
 \end{figure}
 
+When running the function gg\_miss\_var, a total of 199 missing
+observation was discovered in the column of weight. This resulted in
+having the original data frame be 489 to the new data frame being 290.
+These missing observation help assign weight be the depending variable
+and length being the independent variable.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+\end{enumerate}
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\#using tidyverse to filter out any Na values in the weight column }
+\CommentTok{\#using tidyverse to filter out any Na values in the weight column \# and deleting that row in the process}
 \NormalTok{troutperch\_Na }\OtherTok{\textless{}{-}}\NormalTok{ fish\_df }\SpecialCharTok{\%\textgreater{}\%} 
   \FunctionTok{drop\_na}\NormalTok{(weight)}
-\FunctionTok{View}\NormalTok{(troutperch\_Na)}
+
+\CommentTok{\#View(troutperch\_Na)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#quick visual of the data }
 \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+} 
   
   \FunctionTok{geom\_point}\NormalTok{()}\SpecialCharTok{+}
+  
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Trout{-}perch lengths and weight"}\NormalTok{)}\SpecialCharTok{+}
   
   \FunctionTok{theme\_classic}\NormalTok{()}
 \end{Highlighting}
@@ -407,95 +322,130 @@ Alternative Hypothesis
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-1-1.pdf}
+{\centering \includegraphics[width=0.9\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-2-1.pdf}
 
 }
 
 \end{figure}
 
+By looking at a quick visual of the data, there appears to be a somewhat
+postive slope, but more tests need to be done.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Diagnostic Plot
+\end{enumerate}
+
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#diagnostic plot}
 \NormalTok{modelobject }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(weight }\SpecialCharTok{\textasciitilde{}}\NormalTok{ length, }\AttributeTok{data =}\NormalTok{ troutperch\_Na)}
+
+\CommentTok{\#combining all four groups in a 2 x 2}
 \FunctionTok{par}\NormalTok{(}\AttributeTok{mfrow =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+
 \FunctionTok{plot}\NormalTok{(modelobject)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-2-1.pdf}
+{\centering \includegraphics{homework-4_files/figure-pdf/diagnostic-plot-1.pdf}
 
 }
 
 \end{figure}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\DocumentationTok{\#\#\#\#\#}
-\CommentTok{\# when looking at the Residual vs Fitted, it looks Heteroscedasticity }
-\CommentTok{\# Normal Q{-}Q, the data looks normal }
-\CommentTok{\# scale {-}location, is the same thing like Residuals vs fitted }
-\CommentTok{\# Residuals vs leverage }
-\end{Highlighting}
-\end{Shaded}
+The diagnostic plot ``Residual vs Fitted'' visually implies that the
+data is heteroscedasticity. The observations are clumped in the middle
+and are not scattered.
+
+The diagnostic plot ``Normal Q-Q'' visually implies that data is normal
+but the right tail is very close to not being normal.
+
+The diagnostic plot ``Scale-Location visually implies if the data is
+heteroscedasiticty or homoscedasticity. Again, majority of the data
+resides in the middle, concluding that the data is of
+heteroscedasiticity.
+
+The diagnostic plot ``Residual vs Leverage'' visually implies if there
+any outlier within the data. There appears to be one data point that is
+outside of the dashed line and thus, a outlier.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Summary
+\end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggpredict}\NormalTok{(modelobject, }\AttributeTok{terms =} \StringTok{"length"}\NormalTok{)}
-
-\FunctionTok{View}\NormalTok{(predictions)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{plot\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }
-                           \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+}
-  \CommentTok{\# first plot the underlying data from maples\_data}
-  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
-  \CommentTok{\# then plot the predictions}
-  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
-            \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted), }
-            \AttributeTok{color =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
-  \CommentTok{\# then plot the 95\% confidence interval from ggpredict}
-  \FunctionTok{geom\_ribbon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
-              \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted, }\AttributeTok{ymin =}\NormalTok{ conf.low, }\AttributeTok{ymax =}\NormalTok{ conf.high), }
-              \AttributeTok{alpha =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
-  \CommentTok{\# theme and meaningful labels}
-  \FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
- \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Stem length (mm)"}\NormalTok{,}
-       \AttributeTok{y =} \StringTok{"Stem dry mass (g)"}\NormalTok{)}
-
-\NormalTok{plot\_predictions}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{homework-4_files/figure-pdf/unnamed-chunk-4-1.pdf}
-
-}
-
-\end{figure}
-
-\begin{Shaded}
-\begin{Highlighting}[]
+\CommentTok{\#using function summary() to display results }
 \NormalTok{model\_summary }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(modelobject)}
 
-\NormalTok{model\_sqaures }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(modelobject)}
+\NormalTok{model\_summary}
+\end{Highlighting}
+\end{Shaded}
 
-\FunctionTok{View}\NormalTok{(model\_sqaures)}
+\begin{verbatim}
+
+Call:
+lm(formula = weight ~ length, data = troutperch_Na)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.0828 -0.4862 -0.1830  0.4128  7.3191 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -11.702476   0.481564  -24.30   <2e-16 ***
+length        0.199852   0.005584   35.79   <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.057 on 288 degrees of freedom
+Multiple R-squared:  0.8164,    Adjusted R-squared:  0.8158 
+F-statistic:  1281 on 1 and 288 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+The function summary
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  ANOVA
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#anova is used to get analysis of variance tables for a model }
+\NormalTok{model\_sqaures }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(modelobject)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#creating a table that demonstrates ANOVA}
 \NormalTok{model\_squares\_table }\OtherTok{\textless{}{-}}\FunctionTok{tidy}\NormalTok{(model\_sqaures) }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\# round the sum of squares and mean squares columns to have 5 digits (could be less)}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(sumsq}\SpecialCharTok{:}\NormalTok{meansq, }\SpecialCharTok{\textasciitilde{}} \FunctionTok{round}\NormalTok{(.x, }\AttributeTok{digits =} \DecValTok{5}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\# round the F{-}statistic to have 1 digit}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{statistic =} \FunctionTok{round}\NormalTok{(statistic, }\AttributeTok{digits =} \DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
+  \CommentTok{\# replace the very very very small p value with \textless{} 0.001}
   
   \FunctionTok{mutate}\NormalTok{(}\AttributeTok{p.value =} \FunctionTok{case\_when}\NormalTok{(p.value }\SpecialCharTok{\textless{}}\FloatTok{0.001} \SpecialCharTok{\textasciitilde{}} \StringTok{"\textless{}0.001"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%} 
   
+  \CommentTok{\#creating a table }
   \FunctionTok{flextable}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} 
-  \CommentTok{\#need to change the weight name to luike fis}
+  
+  \CommentTok{\#changing the header, for ease of understanding }
   \FunctionTok{set\_header\_labels}\NormalTok{(}\AttributeTok{df =} \StringTok{"Degrees of Freedom"}\NormalTok{, }
                     \AttributeTok{sumsq =} \StringTok{"Sum of squares"}\NormalTok{,}
                     \AttributeTok{meansq =} \StringTok{"Mean squares"}\NormalTok{,}
@@ -530,13 +480,13 @@ Alternative Hypothesis
 
 
 
-\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{length}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.2877}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.287687}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,280.844}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{<0.001}}} \\
+\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{length}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.2877}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,432.28769}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1,280.8}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{<0.001}}} \\
 
 
 
 
 
-\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Residuals}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{288}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{322.0525}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1.118238}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} \\
+\multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{Residuals}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{288}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{322.0525}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{1.11824}}} & \multicolumn{1}{>{\raggedleft}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} & \multicolumn{1}{>{\raggedright}m{\dimexpr 0.75in+0\tabcolsep}}{\textcolor[HTML]{000000}{\fontsize{11}{11}\selectfont{}}} \\
 
 \ascline{1.5pt}{666666}{1-6}
 
@@ -553,6 +503,110 @@ Alternative Hypothesis
 \global\setlength{\tabcolsep}{\Oldtabcolsep}
 
 \renewcommand*{\arraystretch}{1}
+
+8.In 1-2 sentences, describe how the ANOVA table relates to the
+information you get from the summary() object.
+
+The ANOVA tables relates to the summary() object, in terms of finding if
+the slope is equal to zero or not equal to zero. By incorporating sum of
+squares and mean squares, the F-value if the value is large means that
+the variation among group means is more than expected by chance, and can
+conclude that the slope is not equal to zero.
+
+9.In 2-3 sentences, summarize your results in prose with in-text
+references to test results. Include all relevant information.
+
+When running the summary(), the t-value for length was 35.79, the
+length's slope was 0.19985, p-value was \textless2e-16 and the standard
+error was 0.005585. When running the ANOVA the F-test was 1,280.8 and
+p-value was less than 0.001. The results from both tests, concluded that
+the length slope is postive, has a p-value lower than 0.05, thus we can
+reject the null hypothesis and accept the alternative hypothesis and can
+conclude that fish length can predict fish weight for trout perch.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{9}
+\tightlist
+\item
+  Model Prediction Plot
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggpredict}\NormalTok{(modelobject, }\AttributeTok{terms =} \StringTok{"length"}\NormalTok{)}
+
+\FunctionTok{View}\NormalTok{(predictions)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{plot\_predictions }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\AttributeTok{data =}\NormalTok{ troutperch\_Na, }
+                           \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ length, }\AttributeTok{y =}\NormalTok{ weight)) }\SpecialCharTok{+}
+  \CommentTok{\#type of graph   }
+  \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+  \CommentTok{\# plotting the predictions on data }
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
+            \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted), }
+            \AttributeTok{color =} \StringTok{"brown"}\NormalTok{, }\AttributeTok{linewidth =}\NormalTok{ .}\DecValTok{9}\NormalTok{) }\SpecialCharTok{+}
+  
+  \CommentTok{\# then plot the 95\% confidence interval from ggpredict}
+  \FunctionTok{geom\_ribbon}\NormalTok{(}\AttributeTok{data =}\NormalTok{ predictions, }
+              \FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ predicted, }\AttributeTok{ymin =}\NormalTok{ conf.low, }\AttributeTok{ymax =}\NormalTok{ conf.high), }
+              \AttributeTok{alpha =}\NormalTok{ .}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+  
+  \DocumentationTok{\#\# theme and labels \#\#}
+ \FunctionTok{theme\_economist}\NormalTok{()}\SpecialCharTok{+} \CommentTok{\#from ggthemes }
+  
+ \CommentTok{\# labeling plot }
+ \FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"Length (mm)"}\NormalTok{,}
+      \AttributeTok{y =} \StringTok{"Weight (g)"}\NormalTok{,}
+      \AttributeTok{title =} \StringTok{"Prediction of Trout{-}Perch"}
+\NormalTok{      )}\SpecialCharTok{+} 
+  \CommentTok{\#adjusting functions }
+  \FunctionTok{theme}\NormalTok{(}
+    \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{face =} \StringTok{"bold"}\NormalTok{),}
+    \AttributeTok{axis.ticks =} \FunctionTok{element\_line}\NormalTok{(}\AttributeTok{linewidth =} \DecValTok{3}\NormalTok{, }\AttributeTok{color =} \StringTok{"darkgray"}\NormalTok{)}
+\NormalTok{  )}
+ 
+\NormalTok{plot\_predictions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=0.9\textwidth,height=\textheight]{homework-4_files/figure-pdf/unnamed-chunk-5-1.pdf}
+
+}
+
+\end{figure}
+
+The plot above demonstrates data of trout perch weight and length,
+between the years of 1981 - 2022 in the North Temperate Lakes. When
+comparing the trout perch length and weight and by running ANOVA and the
+summery(), the length has a postive slope. The predication interval is
+visualized by the brown line which defines a range of values within
+which a response is likely to fall given a specified length value. The
+gray hue, surrounding the predication interval represents the a
+confidence level of 95\% the predication interval can predict in. In
+conclusion, the data can help predict the weight of a troutperch when
+given the length of the troutperch.
+
+The above plot demonstrates data regarding the weight and length of
+trout perch in the North Temperate Lakes from 1981 to 2022. By conducing
+ANOVA and using the ``summary()'' function, we had significant evidence
+to reject the null hypothesis and accept the alternative hypothesis.
+This is viewed being that the slope of this plot does not equal to zero
+but the length of the trout perch exhibits a positive slop.
+
+The brown line in the plot represents the prediction interval, which
+establishes a range of values where the response is likely to fall,
+given a specific length value. The gray shading surrounding the
+prediction interval signifies a confidence level of 95\%, indicating the
+accuracy of the prediction interval. In conclusion, this data can be
+utilized to predict the weight of a trout perch based on its length in
+the North Temperate Lakes.
 
 
 
